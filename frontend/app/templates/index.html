@@ -7,25 +7,40 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h1>Generador de Facturas PDF</h1>
-        <form method="POST" action="/generar-pdf">
-            <div class="form-group">
-                <label for="id_factura">ID de Factura:</label>
-                <input type="text" id="id_factura" name="id_factura" required>
+    <div class="page-wrapper">
+        <header class="hero">
+            <div class="hero-content">
+                <p class="eyebrow">Factura en un clic</p>
+                <h1>Generador de Facturas PDF</h1>
+                <p class="hero-text">Ingresa el ID de la factura y descarga tu documento en formato PDF de forma rápida y confiable.</p>
             </div>
-            <button type="submit">Generar PDF</button>
-        </form>
-        
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="alert">
-                    {% for message in messages %}
-                        <p>{{ message }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
+        </header>
+
+        <main class="container">
+            <section class="form-card">
+                <h2>Buscar factura</h2>
+                <p class="form-help">Introduce el identificador de la factura que deseas generar.</p>
+                <form id="invoice-form" method="POST" action="/generar-pdf">
+                    <div id="status" class="status" aria-live="polite"></div>
+                    <div class="form-group">
+                        <label for="id_factura">ID de Factura</label>
+                        <input type="text" id="id_factura" name="id_factura" placeholder="Ej. 1023" required>
+                    </div>
+                    <button type="submit">Generar PDF</button>
+                </form>
+
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="alert">
+                            {% for message in messages %}
+                                <p>{{ message }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+            </section>
+        </main>
     </div>
 </body>
 </html>
