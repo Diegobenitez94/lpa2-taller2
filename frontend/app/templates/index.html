@@ -29,15 +29,6 @@
                     <button type="submit">Generar PDF</button>
                 </form>
 
-                {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                        <div class="alert">
-                            {% for message in messages %}
-                                <p>{{ message }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                {% endwith %}
                 <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
             </section>
         </main>

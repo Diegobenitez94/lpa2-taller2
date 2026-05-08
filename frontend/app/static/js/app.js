@@ -34,9 +34,22 @@ const parseErrorMessage = async (response) => {
     const contentType = response.headers.get('content-type') || '';
     if (contentType.includes('application/json')) {
         const data = await response.json();
-        return data.detail || data.message || 'Error desconocido';
+        return data.error || data.detail || data.message || 'Error desconocido';
     }
-    return response.text();
+    return response.statusText || 'Error desconocido';
+};
+
+const validateInvoiceId = async (invoiceId) => {
+    try {
+        const response = await fetch(`/api/facturas/${invoiceId}`);
+        if (!response.ok) {
+            const message = await parseErrorMessage(response);
+            return { valid: false, error: message };
+        }
+        return { valid: true, data: await response.json() };
+    } catch (error) {
+        return { valid: false, error: 'No se pudo verificar la factura' };
+    }
 };
 
 if (form) {
@@ -52,6 +65,15 @@ if (form) {
 
         setLoading(true);
         try {
+            setStatus('Validando factura...');
+            const validation = await validateInvoiceId(invoiceId);
+            if (!validation.valid) {
+                setStatus(validation.error, 'error');
+                setLoading(false);
+                return;
+            }
+
+            setStatus('Generando PDF...');
             const formData = new FormData();
             formData.append('id_factura', invoiceId);
 
@@ -72,8 +94,7 @@ if (form) {
                 await downloadBlob(blob, `Factura_${invoiceId}.pdf`);
                 setStatus('Factura generada correctamente. Revisa tu descarga.', 'success');
             } else {
-                const text = await response.text();
-                setStatus(text || 'Respuesta inesperada del servidor.', 'error');
+                setStatus('Respuesta inesperada del servidor.', 'error');
             }
         } catch (error) {
             setStatus('No se pudo conectar con el servidor. Intenta de nuevo más tarde.', 'error');

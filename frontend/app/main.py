@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request, send_file, abort
+from flask import Flask, render_template, request, send_file, abort, jsonify
 import requests
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, ParagraphStyle, Spacer
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import mm
 from io import BytesIO
 import os
@@ -14,6 +14,19 @@ BACKEND_URL = os.getenv('BACKEND_URL', 'http://backend:8000')
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/api/facturas/<id_factura>', methods=['GET'])
+def get_factura(id_factura):
+    """Obtiene los datos de una factura desde el backend"""
+    try:
+        response = requests.get(f'{BACKEND_URL}/facturas/v1/{id_factura}')
+        if response.status_code != 200:
+            return jsonify({"error": "Factura no encontrada"}), 404
+        return jsonify(response.json())
+    except requests.exceptions.ConnectionError:
+        return jsonify({"error": "Error de conexión con el servidor"}), 503
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/generar-pdf', methods=['POST'])
 def generar_pdf():
@@ -26,7 +39,7 @@ def generar_pdf():
             
         factura = response.json()
         
-        # TODO: Crear buffer y doc para la creación del PDF
+        
         buffer = BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=20*mm, leftMargin=20*mm, topMargin=20*mm, bottomMargin=18*mm)
         elements = []

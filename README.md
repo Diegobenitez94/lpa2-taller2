@@ -4,7 +4,8 @@ Sistema completo de generación de facturas, utilizando [FastAPI](https://fastap
 
 ## Autor
 
-- Nombre del Estudiante - @perfil_de_github
+- Nombre del Estudiante:Diego Fernando Benitez Camacho 
+- @Diegobenitez94
 
 ## Descripción del Proyecto
 
