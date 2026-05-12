@@ -7,9 +7,21 @@ app = FastAPI(title="API de Facturas Fake", version="1.0")
 fake = Faker("es_ES")
 
 
+@app.get("/")
+def root():
+    return {
+        "mensaje": "Bienvenido a la API de Facturas Fake",
+        "version": "1.0",
+        "rutas_disponibles": {
+            "raiz": "/",
+            "obtener_factura": "/facturas/v1/{numero_factura}"
+        }
+    }
+
+
 @app.get("/facturas/v1/{numero_factura}")
 def get_factura(numero_factura: str):
-    # Generar datos falsos para empresa y cliente
+    
     empresa = {
         "nombre": fake.company(),
         "direccion": fake.address(),
@@ -23,7 +35,7 @@ def get_factura(numero_factura: str):
         "telefono": fake.phone_number()
     }
 
-    # Generar entre 1 y 5 ítems de detalle
+   
     detalle = []
     for _ in range(random.randint(1, 5)):
         cantidad = random.randint(1, 10)
